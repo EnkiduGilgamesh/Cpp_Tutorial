@@ -1,5 +1,7 @@
 # Object-oriented
 
+[TOC]
+
 TODO: inline function
 
 When we make some complex products, we always divide it into small and simple parts and assemble them finally. So does a complex program. This is what an object-oriented programming language can do, dividing a complex program into small submodule so that we can fix bug and reuse the program more easily.
@@ -456,3 +458,215 @@ int main(){
     return 0;
 }
 ```
+
+# This Pointer
+
+Every object has a pointer named `this` which points itself. Through `this` pointer, we can access the object’s own methods. For instance
+
+```cpp
+#include <iostream>
+ 
+using namespace std;
+ 
+class Box
+{
+   public:
+      Box(double l=2.0, double b=2.0, double h=2.0)
+      {
+         cout <<"Constructor called." << endl;
+         length = l;
+         breadth = b;
+         height = h;
+      }
+      double Volume()
+      {
+         return length * breadth * height;
+      }
+      int compare(Box box)
+      {
+         // use this pointer to access the Volume() method
+         return this->Volume() > box.Volume();
+      }
+   private:
+      double length;            // Length of a box
+      double breadth;           // Breadth of a box
+      double height;            // Height of a box
+};
+ 
+int main(void)
+{
+   Box Box1(3.3, 1.2, 1.5);    // Declare box1
+   Box Box2(8.5, 6.0, 2.0);    // Declare box2
+ 
+   if(Box1.compare(Box2))
+   {
+      cout << "Box2 is smaller than Box1" <<endl;
+   }
+   else
+   {
+      cout << "Box2 is equal to or larger than Box1" <<endl;
+   }
+   return 0;
+}
+```
+
+Notice that friend functions cannot be accessed through `this` pointer because they are not the classes’ methods.
+
+# Static
+
+## Static Member
+
+If a class member is **static**, that means all the objects belong to this class share this member. In other words, a `static` member is unique which is different from common members. In addition, a `static` member can be called through not only objects’ name, but also the class’ name. For instance
+
+```cpp
+#include <iostream>
+ 
+using namespace std;
+ 
+class Line{
+   static objCnt;
+   public:
+      Line(double l){
+        objCnt++;
+        length = l;
+      }
+      ~Line(){
+        objCnt—-;
+      }
+   private:
+      double length;
+};
+
+Line::objCnt = 0;
+
+int main(){
+    Line l1(1.0);
+    Line l2(2.0);
+    
+    // call the objCnt by class name
+    cout << “Total number of lines is: ” << Line::objCnt << endl;
+    
+    delete(l2);
+    
+    cout << “Total number of lines is: ” << l2.objCnt << endl;
+    
+    return 0;
+}
+```
+
+Notice that `static` member can only be initialized out of the class. And it will **be initialized by `0` by default**.
+
+## Static Function
+
+A `static` function has no `this` pointer. It also **can be accessed by the class name**. Moreover, it can only access the `static` members of the class. For instance
+
+```cpp
+#include <iostream>
+ 
+using namespace std;
+ 
+class Line{
+   static objCnt;
+   static getObjCnt(){
+      return objCnt;
+   }
+   public:
+      Line(double l){
+        objCnt++;
+        length = l;
+      }
+      ~Line(){
+        objCnt—-;
+      }
+   private:
+      double length;
+};
+
+Line::objCnt = 0;
+
+int main(){
+    Line l1(1.0);
+    Line l2(2.0);
+    
+    cout << “Total number of lines is: ” << Line::getObjCnt() << endl;
+    
+    delete l2;
+    
+    cout << “Total number of lines is: ” << l2.getObjCnt() << endl;
+    
+    return 0;
+}
+```
+
+# Inheritance
+
+**Inheritance** is an important characteristic of OOP which allows us define a class through another class, so the new class will have a part of the existing class’ members and methods. Let’s draw an analogy:
+
+```cpp
+// base class
+class Animal {
+    void eat();
+    void sleep();
+};
+
+// derived class
+class Dog : public Animal {
+    void bark() 函数
+};
+```
+
+In the above program, the class `Dog` inherits from class `Animal`, so a `Dog` can do eating and sleeping like all `Animal`. But not all `Animal` can bark. The `Dog` is called **subclass** or **derived class**, and the `Animal` is called **superclass** or **base class**.
+
+When inheriting, we also need to confirm the **access operator**. Different kinds of inheritance can make the access properties of the superclass different. The members in superclass with different access properties may be changed in different inheritance way. The situations are showed in the latter table:
+
+|  | superclass public | superclass protected |
+| --- | --- | --- |
+| inheritance public | public | protected |
+| inheritance private | private | private |
+| inheritance protected | protected | protected |
+
+The **private** members in superclass cannot be directly accessed by subclass. But subclass can call the superclass' methods to indirectly access them.
+
+A program is given to help understand inheritance
+
+```cpp
+#include <iostream>
+
+using namespace std;
+ 
+// base class
+class Shape {
+   public:
+      void setWidth(int w){
+         width = w;
+      }
+      void setHeight(int h){
+         height = h;
+      }
+   protected:
+      int width;
+      int height;
+};
+ 
+// derived class
+class Rectangle: public Shape{
+   public:
+      int getArea(){ 
+         return (width * height); 
+      }
+};
+ 
+int main(void){
+   Rectangle Rect;
+ 
+   Rect.setWidth(5);
+   Rect.setHeight(7);
+ 
+   // output the rectangle's area
+   cout << "Total area: " << Rect.getArea() << endl;
+ 
+   return 0;
+}
+```
+
+TODO: The exception 
