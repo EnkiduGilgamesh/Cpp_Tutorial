@@ -74,7 +74,7 @@ void Hello::sayHello(){
 }
 ```
 
-We can define an object by calling the class name and setting the object name.
+We can define an object by calling the class name and setting the object name. This step is called **instantiation**.
 
 ```cup
 Box box1;
@@ -617,6 +617,10 @@ class Dog : public Animal {
 
 In the above program, the class `Dog` inherits from class `Animal`, so a `Dog` can do eating and sleeping like all `Animal`. But not all `Animal` can bark. The `Dog` is called **subclass** or **derived class**, and the `Animal` is called **superclass** or **base class**.
 
+## Access Operator
+
+Now we can turn back to see what is the characteristic of **protected** members. A protected member is **accessible in the class or the class' subclass** but not accessible beyond the two situations.
+
 When inheriting, we also need to confirm the **access operator**. Different kinds of inheritance can make the access properties of the superclass different. The members in superclass with different access properties may be changed in different inheritance way. The situations are showed in the latter table:
 
 |  | superclass public | superclass protected |
@@ -669,4 +673,107 @@ int main(void){
 }
 ```
 
-TODO: The exception 
+In addition, the **constructor**, **destructor**, **friend function** and **reloaded operator** won't be inherited in any situations.
+
+## Multiple Inheritance
+
+Multiple inheritance allows one derived class inherits multiple base classes so that it can obtain all the base classes' characteristics. For instance
+
+```cpp
+#include <iostream>
+ 
+using namespace std;
+ 
+// Base Class Shape
+class Shape 
+{
+   public:
+      void setWidth(int w){
+         width = w;
+      }
+      void setHeight(int h){
+         height = h;
+      }
+   protected:
+      int width;
+      int height;
+};
+ 
+// Base Class PaintCost
+class PaintCost 
+{
+   public:
+      int getCost(int area){
+         return area * 70;
+      }
+};
+ 
+// Derived Class
+class Rectangle: public Shape, public PaintCost{
+   public:
+      int getArea(){ 
+         return (width * height); 
+      }
+};
+ 
+int main(void){
+   Rectangle Rect;
+   int area;
+ 
+   Rect.setWidth(5);
+   Rect.setHeight(7);
+ 
+   area = Rect.getArea();
+   
+   // Output the area
+   cout << "Total area: " << Rect.getArea() << endl;
+ 
+   // Output the cost
+   cout << "Total paint cost: $" << Rect.getCost(area) << endl;
+ 
+   return 0;
+}
+```
+
+# Operator Reloading
+
+In C++, we can redefine most of the operators. They are:
+
+| Type | Operator |
+| --- | --- |
+| Unary | `+`, `-`, `*`, `&` |
+
+
+TODO: operator reload
+
+# Abstract Class
+
+If a method in base class is meaningless whereas necessary in derived class. We can declare a **virtual function**. For instance
+
+```cpp
+class Shape{
+   public:
+      // virtual function
+      virtual double getArea() = 0;
+   protected:
+      double width;
+      double height;
+};
+```
+
+A virtual function doesn't need to be defined in base class but **must be defined in derived class**, otherwise errors will appear. If a class has at least one virtual function, it is called **abstract class**. Abstract classes are often used to normalize the behavior of the derived class, and **cannot be directly instanced**. For instance
+
+```cpp
+class Rect : public Shape{
+    public:
+        Shape(double w, double h){
+            width = w;
+            height = h;
+        }
+        double getArea(){
+            return width * height;
+        }
+}
+```
+
+Notice that the definition of a virtual function in subclass should be **the same with the superclass in return type, parameters list**.
